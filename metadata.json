@@ -1,0 +1,6 @@
+{
+  "name": "LexiClean: Academic Abbreviation & Noisy Text Processor",
+  "description": "A high-performance NLP tool focused on abbreviation normalization, short-form text processing, and noisy text cleaning for academic and research contexts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

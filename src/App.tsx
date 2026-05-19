@@ -37,7 +37,7 @@ import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 
 // Initial state for custom abbreviations
-const STORAGE_KEY = 'lexiclean_custom_dict';
+const STORAGE_KEY = 'shabda_ai_custom_dict';
 
 export default function App() {
   const [inputText, setInputText] = useState('');
@@ -51,15 +51,13 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState('processor');
-  const [strictMode, setStrictMode] = useState(false);
   const [importUrl, setImportUrl] = useState('');
 
-  // Initialize engine with custom dictionary and strict mode
+  // Initialize engine with custom dictionary
   const engine = useMemo(() => {
-    const base = strictMode ? {} : DEFAULT_ABBREVIATIONS;
-    const finalDict = { ...base, ...customDict };
+    const finalDict = { ...DEFAULT_ABBREVIATIONS, ...customDict };
     return new NLPEngine(finalDict);
-  }, [customDict, strictMode]);
+  }, [customDict]);
 
   // Persist custom dict
   useEffect(() => {
@@ -319,8 +317,8 @@ export default function App() {
             <Cpu className="w-5 h-5 mr-2" />
             <span className="text-sm font-semibold uppercase tracking-wider">Metrics-Driven Normalization</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-800 mb-4 font-mono">
-            LE <span className="text-indigo-600">CLEAN</span>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-800 mb-4 font-mono uppercase">
+            shabda<span className="text-indigo-600">AI</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
             Optimized for <strong>Accuracy</strong>, <strong>F1-Score</strong>, <strong>RMSE</strong>, <strong>ROUGE-1</strong>, and <strong>Log Loss</strong> benchmarks.
@@ -524,92 +522,6 @@ export default function App() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </TabsContent>
-
-          {/* Tab: Leaderboard */}
-          <TabsContent value="leaderboard">
-             <Card className="border-indigo-100 shadow-xl rounded-2xl overflow-hidden bg-gradient-to-br from-white to-slate-50">
-               <CardHeader className="bg-indigo-900 text-white p-10">
-                 <div className="flex items-center justify-between text-left">
-                   <div>
-                     <CardTitle className="text-4xl font-black mb-2 flex items-center">
-                       <Trophy className="w-10 h-10 mr-4 text-yellow-500" />
-                       LEADERBOARD_SIMULATOR
-                     </CardTitle>
-                     <CardDescription className="text-indigo-200 text-lg">
-                       Calculate your potential Kaggle standing based on current model performance.
-                     </CardDescription>
-                   </div>
-                   <div className="p-6 bg-white/10 rounded-3xl backdrop-blur-md border border-white/20 text-center min-w-[200px]">
-                      <span className="text-[10px] uppercase font-bold tracking-[0.2em]">Aggregate Score</span>
-                      <div className="text-5xl font-black text-indigo-300">{( (stats.accuracy + stats.f1 + (stats.rouge || 0)) / 3 * 100).toFixed(1)}</div>
-                   </div>
-                 </div>
-               </CardHeader>
-               <CardContent className="p-10">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                     <div className="space-y-6">
-                        <div className="p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
-                           <h4 className="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest text-left">Global Accuracy</h4>
-                           <div className="flex items-end space-x-2 mb-4">
-                              <span className="text-6xl font-black text-indigo-600">{(stats.accuracy*100).toFixed(0)}</span>
-                              <span className="text-2xl font-bold text-slate-300 mb-1">%</span>
-                           </div>
-                           <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${stats.accuracy*100}%` }} />
-                           </div>
-                        </div>
-
-                        <div className="p-8 bg-white rounded-3xl shadow-sm border border-slate-100 text-left">
-                           <h4 className="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest">ROUGE-1 Score</h4>
-                           <div className="flex items-end space-x-2 mb-4">
-                              <span className="text-6xl font-black text-emerald-600">{(stats.rouge || 0).toFixed(2)}</span>
-                           </div>
-                           <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${(stats.rouge || 0)*100}%` }} />
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="md:col-span-2 bg-slate-900 rounded-3xl p-10 text-white relative overflow-hidden text-left">
-                        <div className="absolute top-0 right-0 p-10 opacity-5">
-                           <Trophy className="w-64 h-64 text-white" />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-8 flex items-center">
-                          <AlertCircle className="w-6 h-6 mr-3 text-indigo-400" />
-                          Leaderboard Insights
-                        </h3>
-                        
-                        <div className="space-y-8 relative z-10">
-                           <div className="flex items-start space-x-4">
-                              <div className="p-3 bg-white/10 rounded-2xl">
-                                 <Plus className="w-6 h-6" />
-                              </div>
-                              <div>
-                                 <h5 className="font-bold text-indigo-300">Model Rank Estimator</h5>
-                                 <p className="text-sm text-slate-400">Your ensemble scoring approach is providing high stability. Aim for F1 {'>'} 0.75 for a Gold Medal rank.</p>
-                              </div>
-                           </div>
-
-                           <div className="flex items-start space-x-4">
-                              <div className="p-3 bg-white/10 rounded-2xl">
-                                 <Target className="w-6 h-6" />
-                              </div>
-                              <div>
-                                 <h5 className="font-bold text-emerald-300">Metric Recommendation</h5>
-                                 <p className="text-sm text-slate-400">Add more domain-specific Hinglish terms to the Glossary to reduce the "Literal Fallback" rate.</p>
-                              </div>
-                           </div>
-
-                           <div className="pt-8 border-t border-white/5 flex gap-4">
-                              <Button className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-8">Export Submission</Button>
-                              <Button variant="outline" className="border-white/10 text-white hover:bg-white/10 rounded-full">Download Log</Button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </CardContent>
-             </Card>
           </TabsContent>
 
           {/* Tab: Datasets */}
@@ -839,8 +751,8 @@ export default function App() {
                  </div>
 
                  <footer className="py-8 border-t border-slate-50 text-center">
-                    <div className="inline-flex items-center px-4 py-2 bg-slate-50 rounded-full text-slate-400 text-xs font-mono">
-                      LEX_CLEAN v2.0.1 | COMPETITION_READY_BUILD | 2026
+                    <div className="inline-flex items-center px-4 py-2 bg-slate-50 rounded-full text-slate-400 text-xs font-mono uppercase">
+                      shabdaAI v2.0.1 | CORE_ENGINE_BUILD | 2026
                     </div>
                  </footer>
                </CardContent>

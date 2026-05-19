@@ -717,7 +717,7 @@ export default function App() {
                     <div>
                       <h3 className="text-2xl font-black mb-4">The Ensemble Architecture</h3>
                       <p className="text-slate-500 leading-relaxed text-lg font-light">
-                        LexiClean utilizes a weighted ensemble of character-level similarity measures. 
+                        shabdaAI utilizes a weighted ensemble of character-level similarity measures. 
                         Unlike basic fuzzy matching, our engine evaluates candidates through three distinct 
                         pipelines: Jaro-Winkler (prefix bias), Levenshtein (edit cost), and Sorensen-Dice (bi-gram convergence).
                       </p>

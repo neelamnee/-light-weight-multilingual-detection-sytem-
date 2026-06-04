@@ -7,6 +7,7 @@ const StringMetrics = {
   // Levenshtein Distance (for character edits)
   levenshtein: (s1: string, s2: string): number => {
     const len1 = s1.length, len2 = s2.length;
+    if (len1 === 0 || len2 === 0) return s1 === s2 ? 1 : 0;
     const matrix = Array.from({ length: len1 + 1 }, (_, i) => 
       Array.from({ length: len2 + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
     );
@@ -59,7 +60,8 @@ const StringMetrics = {
     }
     const jaro = (m / s1.length + m / s2.length + (m - t / 2) / m) / 3;
     const p = 0.1; let l = 0;
-    while (s1[l] === s2[l] && l < 4) l++;
+    const maxPrefixLen = Math.min(s1.length, s2.length);
+    while (l < maxPrefixLen && s1[l] === s2[l] && l < 4) l++;
     return Math.min(1, jaro + l * p * (1 - jaro));
   }
 };
@@ -365,34 +367,47 @@ export class NLPEngine {
     if (target.length < 2) return null;
 
     let bestMatch: { phrase: string; key: string; score: number } | null = null;
+    const minorWords = new Set(['of', 'to', 'in', 'at', 'on', 'and', 'or', 'the', 'a', 'an', 'is', 'for', 'by', 'with', 'about']);
 
     this.dictionary.forEach((phrase, key) => {
       const lowerPhrase = phrase.toLowerCase().trim();
       const phraseWords = lowerPhrase.split(/\s+/).filter(Boolean);
 
-      // Rule 1: Guard check: First character of target MUST match first character of phrase / key
-      if (target[0] !== lowerPhrase[0]) {
+      // Rule 1: Guard check: First character must match key or phrase start
+      if (target[0] !== lowerPhrase[0] && target[0] !== key[0]) {
         return;
       }
 
-      // 1. Multi-word acronym matching / first-letter subsequence matching
+      // 1. Multi-word acronym matching (Exact matches of initials)
       if (phraseWords.length > 1) {
-        const initials = phraseWords.map(w => w[0]).join('');
-        
-        // Exact initials match (e.g. "nlp" vs "natural language processing")
-        if (initials === target) {
+        const fullInitials = phraseWords.map(w => w[0]).join('');
+        const majorInitials = phraseWords
+          .filter(w => !minorWords.has(w))
+          .map(w => w[0])
+          .join('');
+
+        // Exact initials match
+        if (target === fullInitials) {
           if (!bestMatch || bestMatch.score < 0.99) {
             bestMatch = { phrase, key, score: 0.99 };
           }
           return;
         }
 
-        // Subsequence of initials (allowing dropping characters in initials)
+        // Exact major initials match
+        if (target === majorInitials) {
+          if (!bestMatch || bestMatch.score < 0.98) {
+            bestMatch = { phrase, key, score: 0.98 };
+          }
+          return;
+        }
+
+        // Check if target is a strict subsequence of full initials (starts with same letter)
         let initIdx = 0;
         let matchedInitials = 0;
         for (let i = 0; i < target.length; i++) {
           const ch = target[i];
-          const foundIdx = initials.indexOf(ch, initIdx);
+          const foundIdx = fullInitials.indexOf(ch, initIdx);
           if (foundIdx !== -1) {
             matchedInitials++;
             initIdx = foundIdx + 1;
@@ -402,34 +417,8 @@ export class NLPEngine {
         }
 
         if (matchedInitials === target.length) {
-          const ratio = target.length / initials.length;
-          const score = 0.82 + (ratio * 0.15); // max 0.97
-          if (!bestMatch || bestMatch.score < score) {
-            bestMatch = { phrase, key, score };
-          }
-          return;
-        }
-
-        // Subsequence matching of first-letters of words (allowing some skipped minor words)
-        let wordIdx = 0;
-        let matchedFirstLetters = 0;
-        for (let i = 0; i < target.length; i++) {
-          const ch = target[i];
-          let found = false;
-          for (let w = wordIdx; w < phraseWords.length; w++) {
-            if (phraseWords[w][0] === ch) {
-              found = true;
-              wordIdx = w + 1;
-              matchedFirstLetters++;
-              break;
-            }
-          }
-          if (!found) break;
-        }
-
-        if (matchedFirstLetters === target.length) {
-          const ratio = target.length / phraseWords.length;
-          const score = 0.80 + (ratio * 0.15); // max 0.95
+          const ratio = target.length / fullInitials.length;
+          const score = 0.80 + (ratio * 0.14); // strict scaling (max 0.94)
           if (!bestMatch || bestMatch.score < score) {
             bestMatch = { phrase, key, score };
           }
@@ -437,51 +426,41 @@ export class NLPEngine {
         }
       }
 
-      // 2. Single-word matching (contraction / prefixes)
-      if (phraseWords.length === 1) {
-        const singleWord = phraseWords[0];
-
-        // 2a. Prefix match (e.g. "vid" -> "video", "pic" -> "picture")
-        if (singleWord.startsWith(target)) {
-          const ratio = target.length / singleWord.length;
-          const score = 0.85 + (ratio * 0.13); // max 0.98
-          if (!bestMatch || bestMatch.score < score) {
-            bestMatch = { phrase, key, score };
+      // 2. Contraction of the abbreviation KEY itself (e.g. "wdm" -> key "wdym")
+      if (key.length >= 3) {
+        if (target[0] === key[0]) {
+          let keyIdx = 0;
+          let matchedCount = 0;
+          for (let i = 0; i < target.length; i++) {
+            const ch = target[i];
+            const foundIdx = key.indexOf(ch, keyIdx);
+            if (foundIdx !== -1) {
+              matchedCount++;
+              keyIdx = foundIdx + 1;
+            } else {
+              break;
+            }
           }
-          return;
-        }
 
-        // 2b. Consonant contraction (e.g. "mrng" -> "morning", "pls" -> "please")
-        // Get consonants of singleWord (keeping first letter intact)
-        const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'y']);
-        let consonants = singleWord[0];
-        for (let i = 1; i < singleWord.length; i++) {
-          if (!vowels.has(singleWord[i])) {
-            consonants += singleWord[i];
-          }
-        }
-
-        // Target must consist of characters present in order within consonants of singleWord (first letter must match)
-        let consIdx = 0;
-        let matchedCons = 0;
-        for (let i = 0; i < target.length; i++) {
-          const ch = target[i];
-          const foundIdx = consonants.indexOf(ch, consIdx);
-          if (foundIdx !== -1) {
-            matchedCons++;
-            consIdx = foundIdx + 1;
-          } else {
-            break;
+          if (matchedCount === target.length) {
+            const ratio = target.length / key.length;
+            const score = 0.70 + (ratio * 0.25); // max 0.95 (e.g., 3/4 is 0.8875)
+            if (!bestMatch || bestMatch.score < score) {
+              bestMatch = { phrase, key, score };
+            }
+            return;
           }
         }
+      }
 
-        if (matchedCons === target.length) {
-          const ratio = target.length / singleWord.length;
-          const score = 0.78 + (ratio * 0.20); // max 0.98
-          if (!bestMatch || bestMatch.score < score) {
-            bestMatch = { phrase, key, score };
-          }
+      // 3. Prefix matching of the abbreviation key (e.g., "rizzler" -> key "rizz")
+      if (target.startsWith(key) && target.length > key.length) {
+        const ratio = key.length / target.length;
+        const score = 0.84 + (ratio * 0.12);
+        if (!bestMatch || bestMatch.score < score) {
+          bestMatch = { phrase, key, score };
         }
+        return;
       }
     });
 
@@ -546,16 +525,21 @@ export class NLPEngine {
       } else {
         // 4. Ensemble Fuzzy Match (Fuse.js + String metrics distance)
         const fuseMatches = this.fuse.search(afterReduction);
-        if (fuseMatches.length > 0) {
-          const candidates = fuseMatches.slice(0, 3).map(match => {
+        const candidates = fuseMatches
+          .map(match => {
             const key = match.item;
+            if (afterReduction[0] !== key[0]) {
+              return null;
+            }
             const jw = StringMetrics.jaroWinkler(afterReduction, key);
             const lev = StringMetrics.levenshtein(afterReduction, key);
             const dice = StringMetrics.dice(afterReduction, key);
-            const score = (jw * 0.5) + (lev * 0.3) + (dice * 0.2);
+            const score = (jw * 0.55) + (lev * 0.35) + (dice * 0.10);
             return { key, score };
-          });
+          })
+          .filter((c): c is { key: string; score: number } => c !== null);
 
+        if (candidates.length > 0) {
           candidates.sort((a, b) => b.score - a.score);
           const bestCandidate = candidates[0];
 
@@ -581,7 +565,7 @@ export class NLPEngine {
                   original: raw,
                   cleaned: afterReduction,
                   normalized: raw,
-                  confidence: prediction.score,
+                  confidence: 0.20, // Low confidence to accurately align metric visual
                   type: 'unseen',
                   isAbbreviation: true,
                   isNoisyCleaned: isNoisyCleaned,
@@ -593,7 +577,7 @@ export class NLPEngine {
                   original: raw,
                   cleaned: afterReduction,
                   normalized: raw, // keep original raw word for safety in unseen normalizations
-                  confidence: bestCandidate.score, // show fallback prediction confidence
+                  confidence: 0.15, // Low confidence visual
                   type: 'unseen',
                   isAbbreviation: true,
                   isNoisyCleaned: isNoisyCleaned,
@@ -621,7 +605,7 @@ export class NLPEngine {
                 original: raw,
                 cleaned: afterReduction,
                 normalized: raw,
-                confidence: prediction.score,
+                confidence: 0.20,
                 type: 'unseen',
                 isAbbreviation: true,
                 isNoisyCleaned: isNoisyCleaned,
@@ -632,7 +616,7 @@ export class NLPEngine {
                 original: raw,
                 cleaned: afterReduction,
                 normalized: raw,
-                confidence: 0.5, // 50% baseline confidence score for completely unrecognized abbreviations
+                confidence: 0.10, // 10% baseline confidence score for completely unrecognized abbreviations
                 type: 'unseen',
                 isAbbreviation: true,
                 isNoisyCleaned: isNoisyCleaned,

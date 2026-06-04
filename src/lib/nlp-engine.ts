@@ -203,6 +203,10 @@ export const DEFAULT_ABBREVIATIONS: Record<string, string> = {
   "flex": "show off",
   "shade": "sneaky insults",
   "valid": "acceptable/good",
+  "unc": "uncle",
+  "icl": "i can't lie",
+  "cod": "call of duty",
+  "wdym": "what do you mean",
   // Corporate/Academic & Acronyms
   "fci": "food corporation of india",
   "fcp": "factory cost price",
@@ -285,6 +289,10 @@ export const SLANG_DEFINITIONS: Record<string, string> = {
   "periodt": "used to end a statement with absolute emphasis, meaning there is no more discussion",
   "hits different": "feels uniquely amazing, comforting, or evokes a special level of emotion",
   "main character": "someone who exhibits confidence, charisma, or behaves as if they are the protagonist",
+  "unc": "an older person, older male, or someone who acts like an 'old head' and is out of touch with modern trends",
+  "icl": "I can't lie (used to assert honesty in a statement)",
+  "cod": "Call of Duty (popular video game franchise) or Cash on Delivery",
+  "wdym": "what do you mean (asking for clarification)",
 };
 
 export interface ProcessedWord {
@@ -362,62 +370,116 @@ export class NLPEngine {
       const lowerPhrase = phrase.toLowerCase().trim();
       const phraseWords = lowerPhrase.split(/\s+/).filter(Boolean);
 
-      // 1. Multi-word acronym matching (e.g. "afaik" -> "as far as i know")
+      // Rule 1: Guard check: First character of target MUST match first character of phrase / key
+      if (target[0] !== lowerPhrase[0]) {
+        return;
+      }
+
+      // 1. Multi-word acronym matching / first-letter subsequence matching
       if (phraseWords.length > 1) {
         const initials = phraseWords.map(w => w[0]).join('');
+        
+        // Exact initials match (e.g. "nlp" vs "natural language processing")
         if (initials === target) {
-          if (!bestMatch || bestMatch.score < 0.98) {
-            bestMatch = { phrase, key, score: 0.98 };
+          if (!bestMatch || bestMatch.score < 0.99) {
+            bestMatch = { phrase, key, score: 0.99 };
           }
-        } else if (initials.includes(target) || target.includes(initials)) {
-          const similarity = StringMetrics.jaroWinkler(target, initials);
-          const score = similarity * 0.90;
+          return;
+        }
+
+        // Subsequence of initials (allowing dropping characters in initials)
+        let initIdx = 0;
+        let matchedInitials = 0;
+        for (let i = 0; i < target.length; i++) {
+          const ch = target[i];
+          const foundIdx = initials.indexOf(ch, initIdx);
+          if (foundIdx !== -1) {
+            matchedInitials++;
+            initIdx = foundIdx + 1;
+          } else {
+            break;
+          }
+        }
+
+        if (matchedInitials === target.length) {
+          const ratio = target.length / initials.length;
+          const score = 0.82 + (ratio * 0.15); // max 0.97
           if (!bestMatch || bestMatch.score < score) {
             bestMatch = { phrase, key, score };
           }
-        }
-      }
-
-      // 2. Consonant skeleton sequence alignment (e.g. "wtv" vs "whatever", "mrng" vs "morning")
-      if (phraseWords.length === 1) {
-        const singleWord = phraseWords[0];
-        let targetIdx = 0;
-        let matchedChars = 0;
-        for (let i = 0; i < singleWord.length; i++) {
-          if (singleWord[i] === target[targetIdx]) {
-            matchedChars++;
-            targetIdx++;
-            if (targetIdx === target.length) break;
-          }
+          return;
         }
 
-        if (targetIdx === target.length) {
-          const ratio = target.length / singleWord.length;
-          const consonantScore = 0.70 + (ratio * 0.25);
-          if (!bestMatch || bestMatch.score < consonantScore) {
-            bestMatch = { phrase, key, score: consonantScore };
-          }
-        }
-      } else {
-        // Multi-word subsequence compatibility (e.g. "hru" vs "how are you")
+        // Subsequence matching of first-letters of words (allowing some skipped minor words)
         let wordIdx = 0;
-        let charMatched = 0;
+        let matchedFirstLetters = 0;
         for (let i = 0; i < target.length; i++) {
           const ch = target[i];
           let found = false;
           for (let w = wordIdx; w < phraseWords.length; w++) {
-            if (phraseWords[w].includes(ch)) {
+            if (phraseWords[w][0] === ch) {
               found = true;
               wordIdx = w + 1;
-              charMatched++;
+              matchedFirstLetters++;
               break;
             }
           }
+          if (!found) break;
         }
-        if (charMatched === target.length) {
-          const multiSubScore = 0.75 + (charMatched / phraseWords.length) * 0.20;
-          if (!bestMatch || bestMatch.score < multiSubScore) {
-            bestMatch = { phrase, key, score: Math.min(0.92, multiSubScore) };
+
+        if (matchedFirstLetters === target.length) {
+          const ratio = target.length / phraseWords.length;
+          const score = 0.80 + (ratio * 0.15); // max 0.95
+          if (!bestMatch || bestMatch.score < score) {
+            bestMatch = { phrase, key, score };
+          }
+          return;
+        }
+      }
+
+      // 2. Single-word matching (contraction / prefixes)
+      if (phraseWords.length === 1) {
+        const singleWord = phraseWords[0];
+
+        // 2a. Prefix match (e.g. "vid" -> "video", "pic" -> "picture")
+        if (singleWord.startsWith(target)) {
+          const ratio = target.length / singleWord.length;
+          const score = 0.85 + (ratio * 0.13); // max 0.98
+          if (!bestMatch || bestMatch.score < score) {
+            bestMatch = { phrase, key, score };
+          }
+          return;
+        }
+
+        // 2b. Consonant contraction (e.g. "mrng" -> "morning", "pls" -> "please")
+        // Get consonants of singleWord (keeping first letter intact)
+        const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'y']);
+        let consonants = singleWord[0];
+        for (let i = 1; i < singleWord.length; i++) {
+          if (!vowels.has(singleWord[i])) {
+            consonants += singleWord[i];
+          }
+        }
+
+        // Target must consist of characters present in order within consonants of singleWord (first letter must match)
+        let consIdx = 0;
+        let matchedCons = 0;
+        for (let i = 0; i < target.length; i++) {
+          const ch = target[i];
+          const foundIdx = consonants.indexOf(ch, consIdx);
+          if (foundIdx !== -1) {
+            matchedCons++;
+            consIdx = foundIdx + 1;
+          } else {
+            break;
+          }
+        }
+
+        if (matchedCons === target.length) {
+          const ratio = target.length / singleWord.length;
+          const score = 0.78 + (ratio * 0.20); // max 0.98
+          if (!bestMatch || bestMatch.score < score) {
+            bestMatch = { phrase, key, score };
           }
         }
       }

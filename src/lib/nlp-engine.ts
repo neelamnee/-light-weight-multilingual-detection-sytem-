@@ -151,7 +151,59 @@ export const DEFAULT_ABBREVIATIONS: Record<string, string> = {
   "svp": "s'il vous plaît",
   "tb": "también",
   "pq": "porque",
-  // Corporate/Academic
+  // Popular Slang (Gen-Z & Social)
+  "afaik": "as far as i know",
+  "afaic": "as far as i'm concerned",
+  "rn": "right now",
+  "ngl": "not gonna lie",
+  "wtv": "whatever",
+  "fr": "for real",
+  "sub": "subscribe",
+  "dm": "direct message",
+  "lmao": "laughing my ass off",
+  "diy": "do it yourself",
+  "faq": "frequently asked questions",
+  "bogo": "buy one get one",
+  "fyp": "for you page",
+  "ama": "ask me anything",
+  "bae": "before anyone else",
+  "yolo": "you only live once",
+  "iykyk": "if you know you know",
+  "grwm": "get ready with me",
+  "oof": "expression of pain or dismay",
+  "rizz": "charisma",
+  "gyatt": "shock exclamation",
+  "sigma": "independent leader",
+  "skibidi": "cool/weird",
+  "yap": "talk excessively",
+  "cap": "lie",
+  "bet": "agreement deal",
+  "bussing": "delicious food",
+  "delulu": "delusional",
+  "ate": "highly excelled",
+  "slay": "succeed brilliantly",
+  "stan": "obsessive fan",
+  "simp": "submissive admirer",
+  "tea": "juicy gossip",
+  "sheesh": "expression of awe",
+  "sus": "suspicious",
+  "bop": "catchy song",
+  "glowup": "transformation",
+  "salty": "bitter/jealous",
+  "mid": "mediocre",
+  "extra": "dramatic/excessive",
+  "boujee": "luxurious fancy",
+  "lowkey": "subtly",
+  "highkey": "openly",
+  "opp": "opponent/rival",
+  "bruh": "disbelief expression",
+  "periodt": "end of discussion",
+  "clout": "fame/influence",
+  "ghost": "suddenly ignore",
+  "flex": "show off",
+  "shade": "sneaky insults",
+  "valid": "acceptable/good",
+  // Corporate/Academic & Acronyms
   "fci": "food corporation of india",
   "fcp": "factory cost price",
   "un": "united nations",
@@ -163,6 +215,76 @@ export const DEFAULT_ABBREVIATIONS: Record<string, string> = {
   "ai": "artificial intelligence",
   "ml": "machine learning",
   "nlp": "natural language processing",
+  "kpi": "key performance indicator",
+  "roi": "return on investment",
+  "cta": "call to action",
+  "oos": "out of stock",
+  "eta": "estimated time of arrival",
+  "sql": "structured query language",
+  "oop": "object oriented programming",
+  "aws": "amazon web services",
+  "gcp": "google cloud platform",
+  "sdk": "software development kit",
+  "ceo": "chief executive officer",
+  "cto": "chief technology officer",
+  "cfo": "chief finance officer",
+  "hr": "human resources",
+  "pr": "public relations",
+  "b2b": "business to business",
+  "b2c": "business to consumer",
+};
+
+export const SLANG_DEFINITIONS: Record<string, string> = {
+  // Gen-Z & Slang definitions
+  "rizz": "romantic charisma, charm, or the ability to attract and seduce a partner",
+  "gyatt": "an expression of shock, surprise, or excitement (short for 'god damn')",
+  "sigma": "a popular, successful, but highly independent and self-reliant person ('independent alpha')",
+  "skibidi": "a nonsensical slang term representing cool, bad, or used as a random intensifier",
+  "fanum tax": "the act of stealing a piece of food from your friend (popularized by stream culture)",
+  "ohio": "used to describe something weird, cringe, or unusual",
+  "mewing": "a tongue posture exercise believed to define and sculpt the jawline",
+  "mog": "to look significantly more attractive, stylish, or physically superior than someone else",
+  "yap": "to talk continuously, ramble, or chatter excessively about trivial things",
+  "cap": "a lie, fabrication, or exaggeration (e.g. 'no cap' means 'no lie / for real')",
+  "no cap": "seriously, absolutely for real, speaking the truth without lying",
+  "bet": "an expression of agreement, approval, or accepting a challenge",
+  "bussing": "extremely delicious, flavorful, or high-quality (usually referring to food)",
+  "delulu": "delusional or holding extreme, unrealistically optimistic beliefs",
+  "ate": "to do something exceptionally well, highly successfully, or beautifully (e.g., 'she ate that')",
+  "crumbs": "evidence of effort or leftovers; 'no crumbs' means doing something absolutely flawlessly",
+  "slay": "to perform outstandingly, look stunningly beautiful, or succeed brilliantly",
+  "stan": "an extremely devoted, obsessive fan of a celebrity, artist, or group",
+  "simp": "someone who acts overly sweet, submissive, or attentive to someone they have a crush on",
+  "tea": "juicy gossip, secret personal information, or news (e.g., 'spill the tea')",
+  "sheesh": "an exclamation of disbelief, shock, or being highly impressed by someone's success or skill",
+  "sus": "suspicious, shady, untrustworthy, or questionable (short for 'suspicious')",
+  "bop": "an incredibly catchy, high-energy song that makes you want to dance",
+  "glowup": "a dramatic physical, mental, or lifestyle transformation for the better",
+  "salty": "feeling bitter, defensive, jealous, or unnecessarily angry over a minor issue",
+  "mid": "mediocre, average, second-rate, or unimpressive",
+  "extra": "over-the-top, dramatic, unnecessary, or excessive behavior",
+  "boujee": "luxurious, high-class, wealthy, or fancy in taste and lifestyle",
+  "lowkey": "subtly, secretly, quietly, or to a moderate extent",
+  "highkey": "openly, clearly, intensely, or with high emphasis",
+  "goated": "considered the greatest of all time (abbreviation of G.O.A.T.)",
+  "ratio": "when a reply to a post gets more likes or engagement than the original post",
+  "clout": "influence, popularity, power, or social media fame",
+  "ghost": "to suddenly cut off all communication with some one without warning",
+  "cancel": "to collectively reject, boycott, or stop supporting a public figure due to controversial actions",
+  "cringe": "feeling intense embarrassment, awkwardness, or second-hand shame on behalf of someone",
+  "flex": "to show off your achievements, physical body, status, or valuable possessions",
+  "shade": "sneaky, subtle, or indirect insults directed at someone (e.g., 'throwing shade')",
+  "rent free": "occupying your thoughts constantly and obsessively without any reason",
+  "snack": "someone who looks extremely attractive, stylish, and appealing",
+  "valid": "completely understandable, impressive, cool, or socially acceptable",
+  "sluff": "to skip class, shirk responsibilities, or take a lazy day",
+  "w": "represents a victory, triumph, or win (e.g., 'huge W')",
+  "l": "represents a loss, failure, or disappointment (e.g., 'took an L')",
+  "opp": "opponent, competitor, rival, or enemy",
+  "bruh": "colloquial expression of disbelief, exhaustion, or disappointment, synonym of 'bro'",
+  "periodt": "used to end a statement with absolute emphasis, meaning there is no more discussion",
+  "hits different": "feels uniquely amazing, comforting, or evokes a special level of emotion",
+  "main character": "someone who exhibits confidence, charisma, or behaves as if they are the protagonist",
 };
 
 export interface ProcessedWord {
@@ -170,7 +292,11 @@ export interface ProcessedWord {
   cleaned: string;
   normalized: string;
   confidence: number;
-  type: 'exact' | 'fuzzy' | 'none' | 'reduced';
+  type: 'exact' | 'fuzzy' | 'none' | 'reduced' | 'unseen';
+  isAbbreviation: boolean;
+  isNoisyCleaned: boolean;
+  fallbackCandidate?: string;
+  meaning?: string;
 }
 
 export class NLPEngine {
@@ -197,54 +323,287 @@ export class NLPEngine {
     return word.replace(/(.)\1{2,}/g, '$1');
   }
 
+  private isAbbreviationHeuristic(word: string): boolean {
+    const clean = word.toLowerCase().trim();
+    if (clean.length < 2 || clean.length > 8) return false;
+    if (!isNaN(Number(clean))) return false;
+
+    // Common standard words set to exclude typical language grammar
+    const standardWords = new Set([
+      // English
+      'the', 'and', 'for', 'you', 'are', 'was', 'with', 'they', 'this', 'have', 'from', 'one', 'had', 'word', 'but', 'not', 'what', 'all', 'were', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'how', 'their', 'will', 'other', 'about', 'out', 'many', 'then', 'them', 'these', 'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time', 'has', 'look', 'two', 'more', 'write', 'go', 'see', 'no', 'way', 'could', 'people', 'my', 'than', 'first', 'water', 'been', 'call', 'who', 'oil', 'its', 'now', 'find', 'long', 'down', 'day', 'did', 'get', 'come', 'made', 'may', 'part', 'new', 'take', 'only', 'me', 'our', 'under', 'very', 'after', 'back', 'good', 'well', 'your', 'with', 'made', 'said', 'here',
+      // Hinglish
+      'hai', 'haan', 'kya', 'bhi', 'se', 'ko', 'mein', 'par', 'aur', 'toh', 'bhai', 'yaar', 'meri', 'mera', 'apna', 'apni', 'raha', 'rahe', 'rahi', 'kar', 'karo', 'gaya', 'gayi', 'gaye', 'bina', 'kuch', 'sab', 'koi', 'ek', 'hi', 'billi', 'kutta', 'gadi', 'ghar', 'pani', 'khana'
+    ]);
+
+    if (standardWords.has(clean)) return false;
+
+    // If its length is 2-4 and not a common word, it is highly likely to be an abbreviation or slang
+    if (clean.length <= 4) return true;
+
+    // For slightly longer words (5-8), check if it has a high consonant ratio (>= 0.6)
+    const vowels = (clean.match(/[aeiouy]/g) || []).length;
+    const consonantRatio = (clean.length - vowels) / clean.length;
+    if (vowels === 0 || consonantRatio >= 0.6) return true;
+
+    return false;
+  }
+
+  /**
+   * Sequence-based acronym / subsequence alignment predictor (Browser ML approximation)
+   */
+  public sequencePredictor(word: string): { phrase: string; key: string; score: number } | null {
+    const target = word.toLowerCase().trim();
+    if (target.length < 2) return null;
+
+    let bestMatch: { phrase: string; key: string; score: number } | null = null;
+
+    this.dictionary.forEach((phrase, key) => {
+      const lowerPhrase = phrase.toLowerCase().trim();
+      const phraseWords = lowerPhrase.split(/\s+/).filter(Boolean);
+
+      // 1. Multi-word acronym matching (e.g. "afaik" -> "as far as i know")
+      if (phraseWords.length > 1) {
+        const initials = phraseWords.map(w => w[0]).join('');
+        if (initials === target) {
+          if (!bestMatch || bestMatch.score < 0.98) {
+            bestMatch = { phrase, key, score: 0.98 };
+          }
+        } else if (initials.includes(target) || target.includes(initials)) {
+          const similarity = StringMetrics.jaroWinkler(target, initials);
+          const score = similarity * 0.90;
+          if (!bestMatch || bestMatch.score < score) {
+            bestMatch = { phrase, key, score };
+          }
+        }
+      }
+
+      // 2. Consonant skeleton sequence alignment (e.g. "wtv" vs "whatever", "mrng" vs "morning")
+      if (phraseWords.length === 1) {
+        const singleWord = phraseWords[0];
+        let targetIdx = 0;
+        let matchedChars = 0;
+        for (let i = 0; i < singleWord.length; i++) {
+          if (singleWord[i] === target[targetIdx]) {
+            matchedChars++;
+            targetIdx++;
+            if (targetIdx === target.length) break;
+          }
+        }
+
+        if (targetIdx === target.length) {
+          const ratio = target.length / singleWord.length;
+          const consonantScore = 0.70 + (ratio * 0.25);
+          if (!bestMatch || bestMatch.score < consonantScore) {
+            bestMatch = { phrase, key, score: consonantScore };
+          }
+        }
+      } else {
+        // Multi-word subsequence compatibility (e.g. "hru" vs "how are you")
+        let wordIdx = 0;
+        let charMatched = 0;
+        for (let i = 0; i < target.length; i++) {
+          const ch = target[i];
+          let found = false;
+          for (let w = wordIdx; w < phraseWords.length; w++) {
+            if (phraseWords[w].includes(ch)) {
+              found = true;
+              wordIdx = w + 1;
+              charMatched++;
+              break;
+            }
+          }
+        }
+        if (charMatched === target.length) {
+          const multiSubScore = 0.75 + (charMatched / phraseWords.length) * 0.20;
+          if (!bestMatch || bestMatch.score < multiSubScore) {
+            bestMatch = { phrase, key, score: Math.min(0.92, multiSubScore) };
+          }
+        }
+      }
+    });
+
+    if (bestMatch && bestMatch.score > 0.60) {
+      return bestMatch;
+    }
+
+    return null;
+  }
+
   public processWord(word: string): ProcessedWord {
     const raw = word.trim();
-    if (!raw) return { original: '', cleaned: '', normalized: '', confidence: 0, type: 'none' };
+    if (!raw) return { original: '', cleaned: '', normalized: '', confidence: 0, type: 'none', isAbbreviation: false, isNoisyCleaned: false };
 
     let cleaned = raw.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '');
     
+    // Check if word has noise like trailing punctuation or repetitive character patterns
+    const hasPunctuationOrCaseNoise = (raw !== cleaned && raw.toLowerCase() !== cleaned);
+    const afterReduction = this.reduceRepeatedChars(cleaned);
+    const hasRepeatedLetters = (cleaned !== afterReduction);
+    const isNoisyCleaned = hasPunctuationOrCaseNoise || hasRepeatedLetters;
+
+    let result: ProcessedWord;
+
     // 1. Exact direct match
     if (this.dictionary.has(cleaned)) {
-      return { original: raw, cleaned: cleaned, normalized: this.dictionary.get(cleaned)!, confidence: 1.0, type: 'exact' };
+      result = { 
+        original: raw, 
+        cleaned: cleaned, 
+        normalized: this.dictionary.get(cleaned)!, 
+        confidence: 1.0, 
+        type: 'exact',
+        isAbbreviation: true,
+        isNoisyCleaned: isNoisyCleaned
+      };
     }
-
     // 2. Reduction match
-    const afterReduction = this.reduceRepeatedChars(cleaned);
-    if (this.dictionary.has(afterReduction)) {
-      return { original: raw, cleaned: afterReduction, normalized: this.dictionary.get(afterReduction)!, confidence: 0.95, type: 'reduced' };
+    else if (this.dictionary.has(afterReduction)) {
+      result = { 
+        original: raw, 
+        cleaned: afterReduction, 
+        normalized: this.dictionary.get(afterReduction)!, 
+        confidence: 0.95, 
+        type: 'reduced',
+        isAbbreviation: true,
+        isNoisyCleaned: true
+      };
     }
-
-    // 3. Ensemble Fuzzy Match
-    const fuseMatches = this.fuse.search(afterReduction);
-    if (fuseMatches.length > 0) {
-      const candidates = fuseMatches.slice(0, 3).map(match => {
-        const key = match.item;
-        const jw = StringMetrics.jaroWinkler(afterReduction, key);
-        const lev = StringMetrics.levenshtein(afterReduction, key);
-        const dice = StringMetrics.dice(afterReduction, key);
-        // Weighted Ensemble: favor JaroWinkler for short abbreviations
-        const score = (jw * 0.5) + (lev * 0.3) + (dice * 0.2);
-        return { key, score };
-      });
-
-      candidates.sort((a, b) => b.score - a.score);
-      const bestCandidate = candidates[0];
-
-      // Competition-grade thresholding
-      const dynamicThreshold = afterReduction.length <= 3 ? 0.88 : 0.75;
-
-      if (bestCandidate.score > dynamicThreshold) {
-        return {
+    // 3. High-confidence Character sequence algorithm match (ML Predictor)
+    else {
+      const prediction = this.sequencePredictor(afterReduction);
+      if (prediction && prediction.score > 0.85) {
+        result = {
           original: raw,
           cleaned: afterReduction,
-          normalized: this.dictionary.get(bestCandidate.key)!,
-          confidence: bestCandidate.score,
-          type: 'fuzzy'
+          normalized: prediction.phrase,
+          confidence: prediction.score,
+          type: 'fuzzy',
+          isAbbreviation: true,
+          isNoisyCleaned: isNoisyCleaned
         };
+      } else {
+        // 4. Ensemble Fuzzy Match (Fuse.js + String metrics distance)
+        const fuseMatches = this.fuse.search(afterReduction);
+        if (fuseMatches.length > 0) {
+          const candidates = fuseMatches.slice(0, 3).map(match => {
+            const key = match.item;
+            const jw = StringMetrics.jaroWinkler(afterReduction, key);
+            const lev = StringMetrics.levenshtein(afterReduction, key);
+            const dice = StringMetrics.dice(afterReduction, key);
+            const score = (jw * 0.5) + (lev * 0.3) + (dice * 0.2);
+            return { key, score };
+          });
+
+          candidates.sort((a, b) => b.score - a.score);
+          const bestCandidate = candidates[0];
+
+          // Competition-grade thresholding
+          const dynamicThreshold = afterReduction.length <= 3 ? 0.88 : 0.75;
+
+          if (bestCandidate.score > dynamicThreshold) {
+            result = {
+              original: raw,
+              cleaned: afterReduction,
+              normalized: this.dictionary.get(bestCandidate.key)!,
+              confidence: bestCandidate.score,
+              type: 'fuzzy',
+              isAbbreviation: true,
+              isNoisyCleaned: isNoisyCleaned
+            };
+          } else {
+            // Fallback candidate available but score below threshold (unseen abbreviation)
+            const looksLikeAbbrev = this.isAbbreviationHeuristic(afterReduction);
+            if (looksLikeAbbrev) {
+              if (prediction) {
+                result = {
+                  original: raw,
+                  cleaned: afterReduction,
+                  normalized: raw,
+                  confidence: prediction.score,
+                  type: 'unseen',
+                  isAbbreviation: true,
+                  isNoisyCleaned: isNoisyCleaned,
+                  fallbackCandidate: `${prediction.key} ("${prediction.phrase}")`
+                };
+              } else {
+                const fallbackVal = this.dictionary.get(bestCandidate.key)!;
+                result = {
+                  original: raw,
+                  cleaned: afterReduction,
+                  normalized: raw, // keep original raw word for safety in unseen normalizations
+                  confidence: bestCandidate.score, // show fallback prediction confidence
+                  type: 'unseen',
+                  isAbbreviation: true,
+                  isNoisyCleaned: isNoisyCleaned,
+                  fallbackCandidate: `${bestCandidate.key} ("${fallbackVal}")`
+                };
+              }
+            } else {
+              result = { 
+                original: raw, 
+                cleaned: afterReduction, 
+                normalized: raw, 
+                confidence: 1.0, 
+                type: afterReduction !== cleaned ? 'reduced' : 'none',
+                isAbbreviation: false,
+                isNoisyCleaned: isNoisyCleaned
+              };
+            }
+          }
+        } else {
+          // No fuzzy registry match found at all
+          const looksLikeAbbrev = this.isAbbreviationHeuristic(afterReduction);
+          if (looksLikeAbbrev) {
+            if (prediction) {
+              result = {
+                original: raw,
+                cleaned: afterReduction,
+                normalized: raw,
+                confidence: prediction.score,
+                type: 'unseen',
+                isAbbreviation: true,
+                isNoisyCleaned: isNoisyCleaned,
+                fallbackCandidate: `${prediction.key} ("${prediction.phrase}")`
+              };
+            } else {
+              result = {
+                original: raw,
+                cleaned: afterReduction,
+                normalized: raw,
+                confidence: 0.5, // 50% baseline confidence score for completely unrecognized abbreviations
+                type: 'unseen',
+                isAbbreviation: true,
+                isNoisyCleaned: isNoisyCleaned,
+                fallbackCandidate: 'Unknown abbreviation'
+              };
+            }
+          } else {
+            result = { 
+              original: raw, 
+              cleaned: afterReduction, 
+              normalized: raw, 
+              confidence: 1.0, 
+              type: afterReduction !== cleaned ? 'reduced' : 'none',
+              isAbbreviation: false,
+              isNoisyCleaned: isNoisyCleaned
+            };
+          }
+        }
       }
     }
 
-    return { original: raw, cleaned: afterReduction, normalized: afterReduction, confidence: 1.0, type: afterReduction !== cleaned ? 'reduced' : 'none' };
+    // Attach definition if abbreviation or slang
+    if (result.isAbbreviation) {
+      const slangKey = result.cleaned.toLowerCase().trim();
+      const slangMeaning = SLANG_DEFINITIONS[slangKey] || SLANG_DEFINITIONS[result.normalized.toLowerCase().trim()];
+      if (slangMeaning) {
+        result.meaning = slangMeaning;
+      } else {
+        result.meaning = result.normalized;
+      }
+    }
+
+    return result;
   }
 
   public processText(text: string): ProcessedWord[] {

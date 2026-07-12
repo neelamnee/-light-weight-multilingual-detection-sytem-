@@ -13,6 +13,7 @@ import {
   FileText, 
   Settings,
   ChevronRight,
+  ChevronDown,
   CheckCircle2,
   AlertCircle,
   Trophy,
@@ -30,6 +31,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { NLPEngine, ProcessedWord, DEFAULT_ABBREVIATIONS, SLANG_DEFINITIONS } from '@/lib/nlp-engine';
+import { MethodologyDemonstration } from '@/components/MethodologyDemonstration';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -50,6 +52,7 @@ export default function App() {
   const [inputText, setInputText] = useState('');
   const [groundTruth, setGroundTruth] = useState('');
   const [processedWords, setProcessedWords] = useState<ProcessedWord[]>([]);
+  const [expandedWordIndex, setExpandedWordIndex] = useState<number | null>(null);
   const [customDict, setCustomDict] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : {};
@@ -155,6 +158,7 @@ export default function App() {
       const computedInferenceEnergy = (activeWatts * (elapsedMs / 3600000.0)) * 1000.0;
       
       setProcessedWords(results);
+      setExpandedWordIndex(null);
       setProcessingTime(elapsedMs);
       setInferenceEnergy(parseFloat(computedInferenceEnergy.toFixed(8)));
       setIsProcessing(false);
@@ -178,6 +182,7 @@ export default function App() {
     setInputText('');
     setGroundTruth('');
     setProcessedWords([]);
+    setExpandedWordIndex(null);
     setProcessingTime(null);
     toast.info("Input cleared");
   };
@@ -431,9 +436,9 @@ export default function App() {
         </motion.div>
       </header>
 
-      <main className="max-w-6xl mx-auto">
+      <main className="max-w-[1550px] mx-auto px-4 md:px-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8 bg-white/50 border shadow-sm rounded-xl p-1 gap-1 h-auto">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-8 bg-white/50 border shadow-sm rounded-xl p-1 gap-1 h-auto">
             <TabsTrigger value="processor" className="data-[state=active]:bg-white rounded-lg py-2">Processor</TabsTrigger>
             <TabsTrigger value="datasets" className="data-[state=active]:bg-white rounded-lg py-2">Datasets</TabsTrigger>
             <TabsTrigger value="editor" className="data-[state=active]:bg-white rounded-lg py-2">Glossary</TabsTrigger>
@@ -442,7 +447,10 @@ export default function App() {
 
           {/* Tab: Processor */}
           <TabsContent value="processor" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Execution Engine */}
+              <div className="xl:col-span-7 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Input Section */}
               <Card className="lg:col-span-2 border-slate-200 shadow-md overflow-hidden rounded-2xl">
                 <CardHeader className="bg-slate-50/50 border-b">
@@ -782,64 +790,263 @@ export default function App() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {processedWords.map((word, idx) => (
-                            <TableRow key={idx} className="group border-slate-50">
-                              <TableCell className="font-mono text-sm">
-                                <div className="flex items-center">
-                                  <div className="w-1 h-8 bg-slate-100 group-hover:bg-indigo-300 mr-3 rounded-full transition-colors" />
-                                  <span className="font-semibold text-slate-600">{word.original}</span>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex flex-col gap-1">
-                                  <div className="flex items-center">
-                                    <span className="text-xs text-slate-400 line-through mr-3 opacity-50">{word.cleaned}</span>
-                                    <ChevronRight className="w-3 h-3 mx-2 text-indigo-400 opacity-50" />
-                                    <span className="font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full text-sm">
-                                      {word.normalized}
-                                    </span>
-                                  </div>
-                                  {word.meaning && word.meaning.toLowerCase() !== word.normalized.toLowerCase() && (
-                                    <span className="text-xs text-slate-500 italic ml-1 mt-1 block font-medium leading-relaxed bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-100/60 max-w-sm">
-                                      <span className="font-bold uppercase text-[9px] text-indigo-500 tracking-wider mr-1">Meaning:</span>
-                                      "{word.meaning}"
-                                    </span>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {word.type === 'exact' && <Badge className="bg-emerald-500 text-white border-none text-[10px] font-black uppercase">Exact</Badge>}
-                                {word.type === 'fuzzy' && <Badge className="bg-indigo-500 text-white border-none text-[10px] font-black uppercase">Ensemble</Badge>}
-                                {word.type === 'reduced' && <Badge className="bg-purple-100 text-purple-700 border-none text-[10px] font-black uppercase">Reduced</Badge>}
-                                {word.type === 'unseen' && (
-                                  <div className="flex flex-col items-start gap-1">
-                                    <Badge className="bg-amber-500 text-white border-none text-[10px] font-black uppercase">Unseen</Badge>
-                                    {word.fallbackCandidate && (
-                                      <span className="text-[10.5px] text-slate-500 italic block leading-tight max-w-[150px] truncate" title={word.fallbackCandidate}>
-                                        Try: {word.fallbackCandidate}
-                                      </span>
+                          {processedWords.map((word, idx) => {
+                            const isExpanded = expandedWordIndex === idx;
+                            return (
+                              <React.Fragment key={idx}>
+                                <TableRow 
+                                  className="group border-slate-50 cursor-pointer hover:bg-slate-50/80 transition-colors"
+                                  onClick={() => setExpandedWordIndex(isExpanded ? null : idx)}
+                                >
+                                  <TableCell className="font-mono text-sm">
+                                    <div className="flex items-center">
+                                      <div className={`w-1 h-8 mr-3 rounded-full transition-colors ${isExpanded ? 'bg-indigo-600' : 'bg-slate-100 group-hover:bg-indigo-300'}`} />
+                                      <div className="flex flex-col">
+                                        <span className="font-semibold text-slate-600 flex items-center gap-1.5">
+                                          {word.original}
+                                          {isExpanded ? (
+                                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                                          ) : (
+                                            <ChevronRight className="w-3.5 h-3.5 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                          )}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex flex-col gap-1">
+                                      <div className="flex items-center">
+                                        <span className="text-xs text-slate-400 line-through mr-3 opacity-50">{word.cleaned}</span>
+                                        <ChevronRight className="w-3 h-3 mx-2 text-indigo-400 opacity-50" />
+                                        <span className="font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full text-sm">
+                                          {word.normalized}
+                                        </span>
+                                      </div>
+                                      {word.meaning && word.meaning.toLowerCase() !== word.normalized.toLowerCase() && (
+                                        <span className="text-xs text-slate-500 italic ml-1 mt-1 block font-medium leading-relaxed bg-slate-50 rounded-lg px-2.5 py-1 border border-slate-100/60 max-w-sm">
+                                          <span className="font-bold uppercase text-[9px] text-indigo-500 tracking-wider mr-1">Meaning:</span>
+                                          "{word.meaning}"
+                                        </span>
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    {word.type === 'exact' && <Badge className="bg-emerald-500 text-white border-none text-[10px] font-black uppercase">Exact</Badge>}
+                                    {word.type === 'fuzzy' && <Badge className="bg-indigo-500 text-white border-none text-[10px] font-black uppercase">Ensemble</Badge>}
+                                    {word.type === 'reduced' && <Badge className="bg-purple-100 text-purple-700 border-none text-[10px] font-black uppercase">Reduced</Badge>}
+                                    {word.type === 'unseen' && (
+                                      <div className="flex flex-col items-start gap-1">
+                                        <Badge className="bg-amber-500 text-white border-none text-[10px] font-black uppercase">Unseen</Badge>
+                                        {word.fallbackCandidate && (
+                                          <span className="text-[10.5px] text-slate-500 italic block leading-tight max-w-[150px] truncate" title={word.fallbackCandidate}>
+                                            Try: {word.fallbackCandidate}
+                                          </span>
+                                        )}
+                                      </div>
                                     )}
-                                  </div>
+                                    {word.type === 'none' && <Badge variant="ghost" className="text-slate-300 text-[10px] font-black uppercase">Literal</Badge>}
+                                  </TableCell>
+                                  <TableCell className="text-right font-mono text-xs font-bold text-indigo-900/50">
+                                    {(word.confidence * 100).toFixed(1)}%
+                                  </TableCell>
+                                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                                    {word.isAbbreviation && (
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 px-2 text-[10px] bg-slate-50 hover:bg-slate-100 rounded-lg text-indigo-600 font-bold border-indigo-100 outline-none inline-flex items-center gap-1"
+                                        onClick={() => handleQuickAdd(word.original)}
+                                      >
+                                        <GraduationCap className="w-3 h-3" /> Teach
+                                      </Button>
+                                    )}
+                                  </TableCell>
+                                </TableRow>
+
+                                {isExpanded && (
+                                  <TableRow className="bg-slate-50/40 hover:bg-slate-50/40 border-b border-indigo-100/40">
+                                    <TableCell colSpan={5} className="p-6 border-t border-b border-indigo-50/40">
+                                      <motion.div 
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-6"
+                                      >
+                                        {/* Row Header */}
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-indigo-100/50 pb-4">
+                                          <div className="flex items-center gap-2">
+                                            <div className="p-2 bg-indigo-600 text-white rounded-xl">
+                                              <Cpu className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                              <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
+                                                Ensemble 12-Stage NLP Processing Trace
+                                              </h4>
+                                              <p className="text-[11px] text-slate-500 font-medium">
+                                                Detailed micro-execution metrics & decisions for the token <span className="font-mono bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-black">"{word.original}"</span>
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <div className="flex flex-wrap gap-2">
+                                            {word.classification && (
+                                              <Badge className="bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-[10px] uppercase px-3 py-1 rounded-full">
+                                                Classification: {word.classification}
+                                              </Badge>
+                                            )}
+                                            <Badge className="bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-[10px] uppercase px-3 py-1 rounded-full">
+                                              Confidence: {(word.confidence * 100).toFixed(0)}%
+                                            </Badge>
+                                          </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                                          {/* Left Section: 13-Stage Pipeline Trace Timeline (Span 7) */}
+                                          <div className="lg:col-span-7 space-y-4 text-left">
+                                            <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                                              Sequence Processing Steps
+                                            </h5>
+
+                                            <div className="space-y-3 max-h-[550px] overflow-y-auto pr-2 scrollbar-thin pl-1">
+                                              {word.pipelineSteps?.map((step, sIdx) => (
+                                                <div key={sIdx} className="relative pl-6 pb-2 last:pb-0">
+                                                  {/* Vertical Line Connector */}
+                                                  {sIdx < (word.pipelineSteps?.length || 0) - 1 && (
+                                                    <span className="absolute left-[9px] top-6 bottom-0 w-[2px] bg-slate-150 z-0" />
+                                                  )}
+                                                  {/* Node Dot */}
+                                                  <span className="absolute left-0 top-1.5 w-5 h-5 rounded-full bg-indigo-50 border border-indigo-500 flex items-center justify-center font-mono text-[9px] font-bold text-indigo-700 z-10">
+                                                    {sIdx + 1}
+                                                  </span>
+
+                                                  <div className="bg-white border border-slate-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow relative z-10">
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-50 pb-1.5 mb-1.5">
+                                                      <span className="font-bold text-slate-700 text-xs">
+                                                        {step.stage}
+                                                      </span>
+                                                      <span className="font-mono text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-md font-extrabold max-w-[200px] truncate" title={step.output}>
+                                                        {step.output}
+                                                      </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                                                      {step.status}
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+
+                                          {/* Right Section: Real-Time Context Visualization Panel (Span 5) */}
+                                          <div className="lg:col-span-5 space-y-5 text-left">
+                                            <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                              <Activity className="w-3.5 h-3.5 text-emerald-500" />
+                                              Real-Time Context Analytics
+                                            </h5>
+
+                                            {/* Context Window Card */}
+                                            <Card className="border-indigo-100 shadow-sm rounded-xl overflow-hidden bg-white text-left">
+                                              <CardHeader className="bg-slate-50/50 py-3 px-4 border-b">
+                                                <CardTitle className="text-[10px] uppercase text-slate-500 tracking-wider font-bold">
+                                                  Surrounding Context Window (Size = 3)
+                                                </CardTitle>
+                                              </CardHeader>
+                                              <CardContent className="p-4 space-y-4">
+                                                <div className="grid grid-cols-3 gap-2 text-center">
+                                                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex flex-col justify-between h-16">
+                                                    <span className="text-[9px] text-slate-400 font-bold uppercase">PREV_WORD</span>
+                                                    <span className="text-[11px] font-mono font-bold text-slate-600 truncate" title={word.contextInfo?.prevToken}>
+                                                      {word.contextInfo?.prevToken && word.contextInfo.prevToken !== "N/A" ? `"${word.contextInfo.prevToken}"` : "ø"}
+                                                    </span>
+                                                  </div>
+                                                  <div className="p-2 rounded-lg bg-indigo-600 text-white ring-4 ring-indigo-500/15 flex flex-col justify-between h-16 font-semibold shadow-sm">
+                                                    <span className="text-[9px] text-indigo-100 font-bold uppercase animate-pulse">CURRENT</span>
+                                                    <span className="text-xs font-mono font-black truncate">
+                                                      "{word.original}"
+                                                    </span>
+                                                  </div>
+                                                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex flex-col justify-between h-16">
+                                                    <span className="text-[9px] text-slate-400 font-bold uppercase">NEXT_WORD</span>
+                                                    <span className="text-[11px] font-mono font-bold text-slate-600 truncate" title={word.contextInfo?.nextToken}>
+                                                      {word.contextInfo?.nextToken && word.contextInfo.nextToken !== "N/A" ? `"${word.contextInfo.nextToken}"` : "ø"}
+                                                    </span>
+                                                  </div>
+                                                </div>
+
+                                                <div className="flex justify-between items-center text-xs pt-1">
+                                                  <span className="font-bold text-slate-500">Sentence Intent:</span>
+                                                  <Badge className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-black uppercase">
+                                                    {word.contextInfo?.intent || "General"}
+                                                  </Badge>
+                                                </div>
+                                              </CardContent>
+                                            </Card>
+
+                                            {/* Context Decision Reasoning */}
+                                            {word.contextInfo && word.contextInfo.candidates && word.contextInfo.candidates.length > 0 ? (
+                                              <Card className="border-indigo-100 shadow-sm rounded-xl overflow-hidden bg-white text-left">
+                                                <CardHeader className="bg-indigo-50/20 py-3 px-4 border-b">
+                                                  <CardTitle className="text-[10px] uppercase text-indigo-700 tracking-wider font-extrabold flex items-center justify-between">
+                                                    <span>Ensemble Probability Candidates</span>
+                                                    <span className="font-mono bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded">
+                                                      Score: {word.contextInfo.contextScore.toFixed(2)}
+                                                    </span>
+                                                  </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-4 space-y-4">
+                                                  <div className="space-y-3">
+                                                    {word.contextInfo.candidates.map((cand, cIdx) => (
+                                                      <div key={cIdx} className="space-y-1.5">
+                                                        <div className="flex justify-between items-baseline text-xs">
+                                                          <span className="font-bold text-slate-700">{cand.candidate}</span>
+                                                          <span className="font-mono text-[10.5px] font-black text-indigo-600">
+                                                            {(cand.confidence * 100).toFixed(0)}%
+                                                          </span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                          <div 
+                                                            className="bg-indigo-600 h-full rounded-full transition-all duration-500" 
+                                                            style={{ width: `${cand.confidence * 100}%` }}
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    ))}
+                                                  </div>
+                                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Context Disambiguation Log</span>
+                                                    <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                                                      {word.contextInfo.reason}
+                                                    </p>
+                                                  </div>
+                                                </CardContent>
+                                              </Card>
+                                            ) : (
+                                              <Card className="border-slate-100 shadow-sm rounded-xl overflow-hidden bg-white text-left">
+                                                <CardHeader className="bg-slate-50/50 py-3 px-4 border-b">
+                                                  <CardTitle className="text-[10px] uppercase text-slate-500 tracking-wider font-bold">
+                                                    Decision Logic Explainer
+                                                  </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-4 space-y-3 text-xs text-slate-500 leading-relaxed font-medium">
+                                                  <p>
+                                                    {word.contextInfo?.reason || "This word was verified by the preprocessing layer or matched against dictionary definitions without requiring ambiguous term disambiguation."}
+                                                  </p>
+                                                  <div className="flex items-center gap-1.5 p-2 bg-indigo-50/40 border border-indigo-100/50 rounded-lg text-indigo-600 font-bold text-[10px]">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                                    <span>Inhibited false expansions & kept logic clean!</span>
+                                                  </div>
+                                                </CardContent>
+                                              </Card>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </motion.div>
+                                    </TableCell>
+                                  </TableRow>
                                 )}
-                                {word.type === 'none' && <Badge variant="ghost" className="text-slate-300 text-[10px] font-black uppercase">Literal</Badge>}
-                              </TableCell>
-                              <TableCell className="text-right font-mono text-xs font-bold text-indigo-900/50">
-                                {(word.confidence * 100).toFixed(1)}%
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {word.isAbbreviation && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-7 px-2 text-[10px] bg-slate-50 hover:bg-slate-100 rounded-lg text-indigo-600 font-bold border-indigo-100 outline-none inline-flex items-center gap-1"
-                                    onClick={() => handleQuickAdd(word.original)}
-                                  >
-                                    <GraduationCap className="w-3 h-3" /> Teach
-                                  </Button>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                              </React.Fragment>
+                            );
+                          })}
                         </TableBody>
                       </Table>
                     </ScrollArea>
@@ -847,7 +1054,14 @@ export default function App() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </TabsContent>
+          </div>
+
+          {/* Right Column: Methodology Demonstration */}
+          <div className="xl:col-span-5 space-y-6 xl:sticky xl:top-6">
+            <MethodologyDemonstration />
+          </div>
+        </div>
+      </TabsContent>
 
           {/* Tab: Datasets */}
           <TabsContent value="datasets" className="space-y-6">

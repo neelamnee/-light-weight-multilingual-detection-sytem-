@@ -55,6 +55,9 @@ export const COMMON_TYPO_CORRECTIONS: Record<string, string> = {
   "wasssup": "what's up",
   "wassssup": "what's up",
   "wasssuppp": "what's up",
+  "whatsup": "what's up",
+  "whatssup": "what's up",
+  "whatssssup": "what's up",
   "sup": "what's up"
 };
 

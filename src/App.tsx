@@ -447,12 +447,12 @@ export default function App() {
 
           {/* Tab: Processor */}
           <TabsContent value="processor" className="space-y-6">
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Column: Execution Engine */}
-              <div className="xl:col-span-7 space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-7 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Input Section */}
-              <Card className="lg:col-span-2 border-slate-200 shadow-md overflow-hidden rounded-2xl">
+              <Card className="md:col-span-2 border-slate-200 shadow-md overflow-hidden rounded-2xl">
                 <CardHeader className="bg-slate-50/50 border-b">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl flex items-center font-mono">
@@ -1057,7 +1057,7 @@ export default function App() {
           </div>
 
           {/* Right Column: Methodology Demonstration */}
-          <div className="xl:col-span-5 space-y-6 xl:sticky xl:top-6">
+          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-6">
             <MethodologyDemonstration />
           </div>
         </div>
